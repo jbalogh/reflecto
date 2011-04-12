@@ -1,0 +1,1 @@
+A tiny wsgi app to mirror github repos on a commit hook.
