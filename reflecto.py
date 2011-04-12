@@ -1,6 +1,11 @@
 import json
+import re
 import subprocess
 import urlparse
+
+
+def clean(s):
+    return re.sub('[^-/:.\w]', '', s)
 
 
 def app(env, start_response):
@@ -10,7 +15,7 @@ def app(env, start_response):
 
     payload = dict(urlparse.parse_qsl(env['wsgi.input'].read()))['payload']
     repo = json.loads(payload)['repository']
-    url = repo['url'] + '.git'
-    path = repo['owner']['name'] + '/' + repo['name']
+    url = clean(repo['url'] + '.git')
+    path = clean(repo['owner']['name'] + '/' + repo['name'])
     subprocess.Popen(['reflecto.sh', url, path]).communicate()
     return url
