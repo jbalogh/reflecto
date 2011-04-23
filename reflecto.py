@@ -15,9 +15,8 @@ def clean(s):
 
 def create_or_update_repo(url, path):
     target = os.path.join(ROOT, path)
-    if not os.path.isdir(target): 
-        subprocess.Popen([GIT, 'clone',
-                                '--mirror', url, target]).communicate()
+    if not os.path.isdir(target):
+        subprocess.Popen([GIT, 'clone', '--mirror', url, target]).communicate()
     else:
         subprocess.Popen([GIT, 'fetch'], cwd=target)
 
@@ -34,4 +33,4 @@ def application(env, start_response):
 
     create_or_update_repo(url, path)
 
-    return url
+    return 'OK'
