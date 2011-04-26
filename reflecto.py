@@ -55,7 +55,7 @@ def repo_list():
     def repos():
         repos = glob.glob(os.path.join(ROOT, "*", "*"))
         for r in repos:
-            url = get_repo_config(r, 'remote.origin.url') 
+            url = get_repo_config(r, 'remote.origin.url')
             rev = get_latest_rev(r)
 
             m = re.search('(.+/(.+/.+))\.git', url)
@@ -63,7 +63,7 @@ def repo_list():
                 url = m.group(1)
                 name = m.group(2)
                 if rev:
-                    url = "%s/commit/%s" % (url, rev)
+                    url = "%s/commits/%s" % (url, rev)
 
                 yield {'url': url, 'rev': rev, 'name': name}
 
