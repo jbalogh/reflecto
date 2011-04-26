@@ -68,7 +68,7 @@ def repo_list():
                 yield {'url': url, 'rev': rev, 'name': name}
 
 
-    return env.get_template('repo_list.html').render(repos=list(repos()))
+    return env.get_template('repo_list.html').render(repos=sorted(list(repos())))
 
 
 def application(env, start_response):
