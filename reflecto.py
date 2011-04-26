@@ -46,11 +46,10 @@ def repo_list():
 
 
     def get_latest_rev(r):
-        master_ref_path = os.path.join(r, 'refs', 'heads', 'master')
-        try:
-            return open(master_ref_path).read().strip()
-        except IOError:
-            return ''
+        p = subprocess.Popen([GIT, 'show', '-s', '--pretty=format:%h', 'master'],
+                                stdout=subprocess.PIPE, cwd=r)
+
+        return p.communicate()[0].strip()
 
 
     def repos():
@@ -66,7 +65,7 @@ def repo_list():
                 if rev:
                     url = "%s/commit/%s" % (url, rev)
 
-                yield {'url': url, 'rev': rev[:6], 'name': name}
+                yield {'url': url, 'rev': rev, 'name': name}
 
 
     return env.get_template('repo_list.html').render(repos=list(repos()))
