@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en-US" dir="ltr">
+    <head>
+        <title>Git Mirror: repository list</title>
+        <style type="text/css">
+            ul.plain {
+                list-style-type: none; 
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Repository List</h1>
+        <ul class="plain">
+            {% for repo in repos %}
+                <li>
+                    <a href="{{ repo.url }}">{{ repo.name }}{% if repo.rev %} ({{ repo.rev }}){% endif %}</a>
+                </li>
+            {% else %}
+                <li>No repos found</li>
+            {% endfor %}
+        </ul>
+    </body>
+</html>

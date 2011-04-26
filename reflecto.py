@@ -7,6 +7,11 @@ import os
 import subprocess
 import urlparse
 
+from jinja2 import Environment, FileSystemLoader
+
+
+TEMPLATE_DIR = os.path.join(os.path.dirname(__file__), 'templates')
+env = Environment(loader=FileSystemLoader(TEMPLATE_DIR))
 
 GIT='/usr/bin/git'
 ROOT='/var/repos/git'
@@ -39,16 +44,6 @@ def get_repo_config(dir, key):
 
 def repo_list():
 
-    def to_url(url, rev):
-        m = re.search('(.+/(.+/.+))\.git', url)
-        if m:
-            base = m.group(1)
-            name = m.group(2)
-            if rev:
-                return '<a href="{0}/commit/{1}">{2} ({1})</a>'.format(base, rev[:6], name)
-            else:
-                return '<a href="{0}">{1}</a>'.format(base, name)
-
 
     def get_latest_rev(r):
         master_ref_path = os.path.join(r, 'refs', 'heads', 'master')
@@ -58,25 +53,29 @@ def repo_list():
             return ''
 
 
-    def repo_urls():
+    def repos():
         repos = glob.glob(os.path.join(ROOT, "*", "*"))
         for r in repos:
             url = get_repo_config(r, 'remote.origin.url') 
             rev = get_latest_rev(r)
-            yield to_url(url, rev)
+
+            m = re.search('(.+/(.+/.+))\.git', url)
+            if m:
+                url = m.group(1)
+                name = m.group(2)
+                if rev:
+                    url = "%s/commit/%s" % (url, rev)
+
+                yield {'url': url, 'rev': rev[:6], 'name': name}
 
 
-    def to_ul(items):
-        return '<ul>%s</ul>' % "\n".join('<li>%s</li>' % u for u in items)
-
-
-    return to_ul(repo_urls())
+    return env.get_template('repo_list.html').render(repos=list(repos()))
 
 
 def application(env, start_response):
     start_response('200 OK', [('Content-Type', 'text/html')])
     if env['REQUEST_METHOD'] != 'POST':
-        return [repo_list()]
+        return [repo_list().encode('utf-8')]
 
     payload = dict(urlparse.parse_qsl(env['wsgi.input'].read()))['payload']
     repo = json.loads(payload)['repository']
