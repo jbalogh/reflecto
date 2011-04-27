@@ -4,12 +4,34 @@
         <title>Git Mirror: repository list</title>
         <style type="text/css">
             ul.plain {
-                list-style-type: none; 
+                list-style-type: none;
+                margin-bottom: 1em;
+            }
+            li {
+              line-height: 1.5em;
+            }
+            p {
+              width: 600px;
             }
         </style>
     </head>
     <body>
         <h1>Repository List</h1>
+        <p>
+        This is a place for us to mirror github repositories. You cannot git
+        push here; it's a read-only mirror away from github. Your repo will be
+        cloned from github whenever github sends gitmirror a web hook request.
+        The URLs will mirror the /:username/:repo structure from github.
+        </p>
+        <p>
+        You can <code>git clone</code> from this page. For example,
+        <code>github.com/jbalogh/reflecto</code> can be cloned with
+        <code>git clone git://gitmirror.mozilla.org/jbalogh/reflecto</code>.
+        </p>
+        <p>
+        Setup instructions are on the
+        <a href="https://intranet.mozilla.org/Git">intranet</a>.
+        </p>
         <ul class="plain">
             {% for repo in repos %}
                 <li>
@@ -19,5 +41,6 @@
                 <li>No repos found</li>
             {% endfor %}
         </ul>
+        <footer>Powered by <a href="https://github.com/jbalogh/reflecto">reflecto</a>.</footer>
     </body>
 </html>
