@@ -35,7 +35,10 @@
         <ul class="plain">
             {% for repo in repos %}
                 <li>
-                    <a href="{{ repo.url }}">{{ repo.name }}{% if repo.rev %} ({{ repo.rev }}){% endif %}</a>
+                  <a href="git://gitmirror.mozilla.org/{{ repo.name }}">{{ repo.name }}</a>
+                  {% if repo.rev %}
+                  - <a href="{{ repo.url }}">{{ repo.rev }}</a>
+                  {% endif %}
                 </li>
             {% else %}
                 <li>No repos found</li>

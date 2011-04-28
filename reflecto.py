@@ -35,40 +35,36 @@ def create_or_update_repo(url, path):
         subprocess.Popen([GIT, 'fetch'], cwd=target)
 
 
-def get_repo_config(dir, key):
+def get_repo_config(repo, key):
     p = subprocess.Popen([GIT, 'config', '--get', key],
-                            stdout=subprocess.PIPE, cwd=dir)
-    value = p.communicate()[0].strip()
-    return value
+                         stdout=subprocess.PIPE, cwd=repo)
+    return p.communicate()[0].strip()
+
+
+def get_latest_rev(repo):
+    p = subprocess.Popen([GIT, 'show', '-s', '--pretty=format:%h', 'master'],
+                         stdout=subprocess.PIPE, cwd=repo)
+    return p.communicate()[0].strip()
+
+
+def list_repos():
+    repos = glob.glob(os.path.join(ROOT, "*", "*"))
+    for r in repos:
+        url = get_repo_config(r, 'remote.origin.url')
+        rev = get_latest_rev(r)
+
+        m = re.search('(.+/(.+/.+))\.git', url)
+        if m:
+            url = m.group(1)
+            name = m.group(2)
+            if rev:
+                url = "%s/commits/%s" % (url, rev)
+
+            yield {'url': url, 'rev': rev, 'name': name}
 
 
 def repo_list():
-
-
-    def get_latest_rev(r):
-        p = subprocess.Popen([GIT, 'show', '-s', '--pretty=format:%h', 'master'],
-                                stdout=subprocess.PIPE, cwd=r)
-
-        return p.communicate()[0].strip()
-
-
-    def repos():
-        repos = glob.glob(os.path.join(ROOT, "*", "*"))
-        for r in repos:
-            url = get_repo_config(r, 'remote.origin.url')
-            rev = get_latest_rev(r)
-
-            m = re.search('(.+/(.+/.+))\.git', url)
-            if m:
-                url = m.group(1)
-                name = m.group(2)
-                if rev:
-                    url = "%s/commits/%s" % (url, rev)
-
-                yield {'url': url, 'rev': rev, 'name': name}
-
-
-    return env.get_template('repo_list.html').render(repos=sorted(list(repos())))
+    return env.get_template('repo_list.html').render(repos=sorted(list_repos()))
 
 
 def application(env, start_response):
