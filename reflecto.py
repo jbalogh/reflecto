@@ -58,7 +58,7 @@ def list_repos():
             url = m.group(1)
             name = m.group(2)
             if rev:
-                url = "%s/commits/%s" % (url, rev)
+                url = "%s/commit/%s" % (url, rev)
 
             yield {'url': url, 'rev': rev, 'name': name}
 
